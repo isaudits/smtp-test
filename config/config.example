@@ -1,0 +1,12 @@
+[main]
+smtp_server=mail.domain.com
+assessor=Pentesting Company LLC
+assessor_email=pentester@pentestco.com
+output_dir=output
+
+[email]
+subject=SMTP spoof test from [ASSESSOR]
+body=This email is sent as part of your organization's penetration test which is being conducted by [ASSESSOR].\n
+        The purpose is to simulate an attacker's ability to send emails which appear to come from inside of your organization.\n
+        If received please forward back to [ASSESSOR_EMAIL]\n
+        --------------------------------------------------------------------------------\n\n
