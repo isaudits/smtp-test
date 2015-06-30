@@ -39,6 +39,14 @@ parser.add_argument('-c','--config',
                     help='Configuration file. (default: config/config.cfg)',
                     action='store', default='config/config.cfg'
 )
+parser.add_argument('--no-spoof',
+                    help='Disable spoof email test',
+                    dest='perform_spoof', action='store_false', default=True
+)
+parser.add_argument('--no-tests',
+                    help='Disable SMTP server tests such as Nmap script scans',
+                    dest='perform_tests', action='store_false', default=True
+)
 parser.add_argument('-d','--debug',
                     help='Print lots of debugging statements',
                     action="store_const",dest="loglevel",const=logging.DEBUG,
@@ -58,6 +66,8 @@ config_file = args.config
 from_addr = args.from_addr
 to_addr = args.to_addr
 target_server = args.server
+perform_spoof = args.perform_spoof
+perform_tests = args.perform_tests
 
 #------------------------------------------------------------------------------
 # Get config file parameters
@@ -86,65 +96,66 @@ email_body=email_body.replace("[ASSESSOR_EMAIL]", assessor_email)
 modules.core.cleanup_routine(output_dir)
 
 #------------------------------------------------------------------------------
-# Nmap SMTP server checks
+# SMTP server tests
 #------------------------------------------------------------------------------
-command =  "nmap -PN -sV -p 25 --script=smtp* "+ target_server
-output_file_path = os.path.join(output_dir, target_server + "_nmap.txt")
-result = modules.core.execute(command,False)
-modules.core.write_outfile(output_dir, target_server+"_nmap.txt",result)
-
-#------------------------------------------------------------------------------
-# MXToolbox smtp server test
-#------------------------------------------------------------------------------
-print "Running MXToolbox.com smtp server tests on "+target_server
-url = "http://mxtoolbox.com/SuperTool.aspx?action=smtp:"+target_server+"&run=toolpage"
-output_file_path = os.path.join(output_dir, target_server + "_mxtoolbox.jpg")
-command = "cutycapt --out="+output_file_path+" --url="+ url
-modules.core.execute(command, True)
+if perform_tests:
+    # Nmap SMTP server checks
+    command =  "nmap -PN -sV -p 25 --script=smtp* "+ target_server
+    output_file_path = os.path.join(output_dir, target_server + "_nmap.txt")
+    result = modules.core.execute(command,False)
+    modules.core.write_outfile(output_dir, target_server+"_nmap.txt",result)
+    
+    # MXToolbox smtp server test
+    print "Running MXToolbox.com smtp server tests on "+target_server
+    url = "http://mxtoolbox.com/SuperTool.aspx?action=smtp:"+target_server+"&run=toolpage"
+    output_file_path = os.path.join(output_dir, target_server + "_mxtoolbox.jpg")
+    command = "cutycapt --out="+output_file_path+" --url="+ url
+    modules.core.execute(command, True)
 
 #------------------------------------------------------------------------------
 # Spoof email test
 #------------------------------------------------------------------------------
-if from_addr and to_addr:
-    
-    print "Performing email spoof tests\n"
-    
-    #email message 1 - external smtp server
-    print "Sending mail from external email server "+external_server
-    
-    email_message = email_body+ "SMTP spoof test 1 \n"
-    email_message += "External SMTP server "+external_server
-    
-    msg = MIMEText(email_message)
-    msg['Subject'] = email_subject
-    msg['From'] = from_addr
-    msg['To'] = to_addr
-    
-    try:
-        s = smtplib.SMTP(external_server)
-        s.sendmail(from_addr, to_addr, msg.as_string())
-        s.quit
-    except:
-        print "Error connecting / sending mail using external email server "+external_server
-    
-    #email message 2 - target smtp server
-    print "Sending mail from target email server "+target_server
-    
-    email_message = email_body+ "SMTP spoof test 2 \n"
-    email_message += "Target SMTP server - "+target_server
-    
-    msg = MIMEText(email_message)
-    msg['Subject'] = email_subject
-    msg['From'] = from_addr
-    msg['To'] = to_addr
-    
-    try:
-        s = smtplib.SMTP(target_server)
-        s.sendmail(from_addr, to_addr, msg.as_string())
-        s.quit
-    except:
-        print "Error connecting / sending email using target email server "+target_server
-else:
-    print "Spoof addresses not specified; skipping spoof tests"
+if perform_spoof:
+    if from_addr and to_addr:
+        
+        print "Performing email spoof tests\n"
+        
+        #email message 1 - external smtp server
+        print "Sending mail from external email server "+external_server
+        
+        email_message = email_body+ "SMTP spoof test 1 \n"
+        email_message += "External SMTP server "+external_server
+        
+        msg = MIMEText(email_message)
+        msg['Subject'] = email_subject
+        msg['From'] = from_addr
+        msg['To'] = to_addr
+        
+        try:
+            s = smtplib.SMTP(external_server)
+            s.sendmail(from_addr, to_addr, msg.as_string())
+            s.quit
+        except:
+            print "Error connecting / sending mail using external email server "+external_server
+        
+        #email message 2 - target smtp server
+        print "Sending mail from target email server "+target_server
+        
+        email_message = email_body+ "SMTP spoof test 2 \n"
+        email_message += "Target SMTP server - "+target_server
+        
+        msg = MIMEText(email_message)
+        msg['Subject'] = email_subject
+        msg['From'] = from_addr
+        msg['To'] = to_addr
+        
+        try:
+            s = smtplib.SMTP(target_server)
+            s.sendmail(from_addr, to_addr, msg.as_string())
+            s.quit
+        except:
+            print "Error connecting / sending email using target email server "+target_server
+    else:
+        print "Spoof addresses not specified; skipping spoof tests"
 
 print "\nDone!"
