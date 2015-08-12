@@ -17,6 +17,9 @@ from email.mime.text import MIMEText
 
 import modules.core
 
+#Change the working directory to the main program directory just in case...
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 #------------------------------------------------------------------------------
 # Configure Argparse to handle command line arguments
 #------------------------------------------------------------------------------
@@ -44,7 +47,7 @@ parser.add_argument('--no-spoof',
                     dest='perform_spoof', action='store_false', default=True
 )
 parser.add_argument('--no-tests',
-                    help='Disable SMTP server tests such as Nmap script scans',
+                    help='Disable direct tests against target SMTP server such as Nmap script scans',
                     dest='perform_tests', action='store_false', default=True
 )
 parser.add_argument('-d','--debug',
