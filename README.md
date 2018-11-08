@@ -11,7 +11,7 @@ the email organization that appear to come from inside the organization)
     * target smtp server (smtp servers should require authentication)
 
 --------------------------------------------------------------------------------
-##Notes
+## Notes
 External spoof test requires an SMTP server to relay through
 
 Please feel free to submit PR for bugfixes or enhancements - any feedback,
@@ -21,16 +21,16 @@ Script tested on Kali Linux as well as OSX and should function on UNIX-based
 systems with required dependencies.
 
 --------------------------------------------------------------------------------
-##Dependencies
+## Dependencies
 
-###Python Module Dependencies:
+### Python Module Dependencies:
 * none at this time
 
-###Binary Dependencies:
+### Binary Dependencies:
 * cutycapt (installed on Kali Linux by default)
 
 --------------------------------------------------------------------------------
-##Todo
+## Todo
 
 * add auth support for assessor-owned smtp server used for spoof testing
 
