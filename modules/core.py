@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
 IS Audits & Consulting, LLC
@@ -23,7 +23,7 @@ import dns.resolver, dns.reversename
 
 # exit routine
 def exit_program():
-    print "\n\nQuitting...\n"
+    print("\n\nQuitting...\n")
     sys.exit()
     
 # cleanup old or stale files
@@ -33,7 +33,7 @@ def cleanup_routine(output_dir):
         os.mkdir(output_dir)
     try:
         if not os.listdir(output_dir) == []:
-            response = raw_input("\nOutput directory is not empty - delete existing contents? (enter no if you want to append data to existing output files)? [no] ")
+            response = input("\nOutput directory is not empty - delete existing contents? (enter no if you want to append data to existing output files)? [no] ")
             if "y" in response or "Y" in response:
                 print("Deleting old output files...\n")
                 shutil.rmtree(output_dir, True)
@@ -59,7 +59,7 @@ def execute(command, suppress_stdout=False):
     
     output = ""
     try:
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        process = subprocess.Popen(command, shell=True, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     
         # Poll process for new output until finished
         while True:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
 IS Audits & Consulting, LLC
@@ -12,7 +12,7 @@ import smtplib
 import argparse
 import logging
 import os
-import ConfigParser
+from configparser import ConfigParser
 from email.mime.text import MIMEText
 
 import modules.core
@@ -78,7 +78,7 @@ perform_tests = args.perform_tests
 
 modules.core.check_config(config_file)
 
-config = ConfigParser.SafeConfigParser()
+config = ConfigParser()
 config.read(config_file)
 external_server=config.get("main", "smtp_server")
 assessor=config.get("main", "assessor")
@@ -109,7 +109,7 @@ if perform_tests:
     modules.core.write_outfile(output_dir, target_server+"_nmap.txt",result)
     
     # MXToolbox smtp server test
-    print "Running MXToolbox.com smtp server tests on "+target_server
+    print("Running MXToolbox.com smtp server tests on "+target_server)
     url = "http://mxtoolbox.com/SuperTool.aspx?action=smtp:"+target_server+"&run=toolpage"
     output_file_path = os.path.join(output_dir, target_server + "_mxtoolbox.jpg")
     command = "cutycapt --out="+output_file_path+" --url="+ url
@@ -121,10 +121,10 @@ if perform_tests:
 if perform_spoof:
     if from_addr and to_addr:
         
-        print "Performing email spoof tests\n"
+        print("Performing email spoof tests\n")
         
         #email message 1 - external smtp server
-        print "Sending mail from external email server "+external_server
+        print("Sending mail from external email server "+external_server)
         
         email_message = email_body+ "SMTP spoof test 1 \n"
         email_message += "External SMTP server "+external_server
@@ -138,11 +138,12 @@ if perform_spoof:
             s = smtplib.SMTP(external_server)
             s.sendmail(from_addr, to_addr, msg.as_string())
             s.quit
-        except:
-            print "Error connecting / sending mail using external email server "+external_server
+        except Exception as e:
+            print("Error connecting / sending mail using external email server "+external_server)
+            print(e)
         
         #email message 2 - target smtp server
-        print "Sending mail from target email server "+target_server
+        print("Sending mail from target email server "+target_server)
         
         email_message = email_body+ "SMTP spoof test 2 \n"
         email_message += "Target SMTP server - "+target_server
@@ -156,9 +157,10 @@ if perform_spoof:
             s = smtplib.SMTP(target_server)
             s.sendmail(from_addr, to_addr, msg.as_string())
             s.quit
-        except:
-            print "Error connecting / sending email using target email server "+target_server
+        except Exception as e:
+            print("Error connecting / sending email using target email server "+target_server)
+            print(e)
     else:
-        print "Spoof addresses not specified; skipping spoof tests"
+        print("Spoof addresses not specified; skipping spoof tests")
 
-print "\nDone!"
+print("\nDone!")
