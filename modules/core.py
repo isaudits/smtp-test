@@ -15,7 +15,12 @@ import shutil
 import subprocess
 import logging
 import time, datetime
-import dns.resolver, dns.reversename
+try:
+    import dns.resolver, dns.reversename
+except ImportError:
+    logging.warn("dnspython module not installed - DNS functions will not work")
+    logging.warn("Install dnspython with 'pip install dnspython'")
+    pass
 
 #------------------------------------------------------------------------------
 # Global core functions
